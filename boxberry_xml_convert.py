@@ -2,6 +2,9 @@ from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 
 
+from icecream import ic
+
+
 def make_xml_file(table_name, list):
     table = ET.Element('Товар')
     for i in range(len(list)):
@@ -75,7 +78,7 @@ def one_item_xml_parse(file_name, suggestion_num):
     product_name = inf_list[0]
     maker_code = product_name.split('(')[-1]
     product_name = "(".join(product_name.split('(')[:-1])
-    return suggestions_name
+    return suggestions_name, id
 
 
 def xml_parse(file_name):
@@ -86,6 +89,7 @@ def xml_parse(file_name):
     print('convert ok')
     suggestions = xml_data.find_all('Предложение')
     list = []
+    len_inf = []
     for suggestion_num in range(len(suggestions)):
         id = str(suggestions[suggestion_num].find('Ид')).split('Ид')[1][1:][:-2]
         # here i have big <Наименование>
@@ -98,11 +102,20 @@ def xml_parse(file_name):
         product_name = inf_list[0]
         maker_code = product_name.split('(')[-1]
         product_name = "(".join(product_name.split('(')[:-1])
+
         list.append([product_name, id, maker_code, *inf])
+        len_inf.append([[len(inf), suggestion_num, product_name, id, maker_code, *inf]])
+    return len_inf
     return list
 
 
 if __name__ == '__main__':
     print()
     # print(one_item_xml_parse('2_5460663850116321203.xml', suggestion_num=99))
-    print(xml_parse('2_5460663850116321203.xml'))
+    a = xml_parse('2_5460663850116321203.xml')
+    N = len(a)
+    for i in range(N - 1):
+        for j in range(N - i - 1):
+            if a[j] > a[j + 1]:
+                a[j], a[j + 1] = a[j + 1], a[j]
+    print(a)
