@@ -2,9 +2,10 @@
 import xml.etree.ElementTree as ET
 
 
-def make_xml_file(table_name, product_name, id, maker_code, brand, size, country, color):
+def make_xml_file(table_name, list):
     table = ET.Element('Товар')
-    for i in range(10):
+    for i in range(len(list)):
+        product_name, id, maker_code, brand, size, country, color = list[i]
         product = ET.SubElement(table, 'Наименование')
         product.text = f"{product_name}"
         data = ET.SubElement(table, 'ХарактеристикиТовара')
@@ -57,5 +58,5 @@ def make_xml_file(table_name, product_name, id, maker_code, brand, size, country
 
 
 if __name__ == '__main__':
-    make_xml_file('table_name', 'product_name', 'id', 'maker_code', 'brand', 'size', 'country', 'color')
+    make_xml_file('table_name', [['product_name', 'id', 'maker_code', 'brand', 'size', 'country', 'color']])
 
