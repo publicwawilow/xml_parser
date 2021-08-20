@@ -1,14 +1,72 @@
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
+import csv
+from difflib import SequenceMatcher
 
 
 from icecream import ic
 
 
+def same_text_or_not(text_one, text_two, similarity_kaf=0.9):
+    try:
+        text_one = str(text_one)
+        text_two = str(text_two)
+    except:
+        return False
+    similarity = SequenceMatcher(None, text_one, text_two).ratio()
+    if similarity >= similarity_kaf:
+        return True
+    else:
+        return False
+
+
+def what_is_it(inf, kaf=0.9):
+    csv_table = []
+    with open('2_5460663850116321236.csv', 'r', encoding='utf-8') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            csv_table.append(row[0].split(';'))
+    for i in csv_table:
+        if same_text_or_not(i[0], str(inf), similarity_kaf=kaf):
+            if i[-3] == '"Бренд"':
+                return ['brand', i[0]]
+            if i[-3] == '"Размер"':
+                return ['size', i[0]]
+            if i[-3] == '"Тип одежды (для размеров)"':
+                return ['size', i[0]]
+            if i[-3] == '"Серия"':
+                return ['series', i[0]]
+            if i[-3] == '"Страна"':
+                return ['country', i[0]]
+            if i[-3] == '"Цвет"':
+                return ['color', i[0]]
+    return None
+
+
 def make_xml_file(table_name, list):
+    print('make xml')
     table = ET.Element('Товар')
     for i in range(len(list)):
-        product_name, id, maker_code, brand, size, country, color = list[i]
+        product_name = list[0]
+        id = list[1]
+        maker_code = list[2]
+        brand, size, country, color = False, False, False, False
+        print('what is it')
+        for i in list[3:]:
+            what = what_is_it(i, 0.8)
+            if what == None:
+                pass
+            elif what[0] == 'brand':
+                brand = what[1]
+            elif what[0] == 'size':
+                size = what[1]
+            elif what[0] == 'series':
+                pass
+            elif what[0] == 'country':
+                country = what[1]
+            elif what[0] == 'color':
+                color = what[1]
+        print('found what is it')
         product = ET.SubElement(table, 'Наименование')
         product.text = f"{product_name}"
         data = ET.SubElement(table, 'ХарактеристикиТовара')
@@ -55,9 +113,10 @@ def make_xml_file(table_name, list):
             s_brand2.text = f"{color}"
 
         tree = ET.ElementTree(table)
+        print('num', i)
 
-        with open(f"{table_name}.xml", "wb") as f:
-            tree.write(f, encoding='utf-8')
+    with open(f"{table_name}.xml", "wb") as f:
+        tree.write(f, encoding='utf-8')
 
 
 def one_item_xml_parse(file_name, suggestion_num):
@@ -82,7 +141,7 @@ def one_item_xml_parse(file_name, suggestion_num):
 
 
 def xml_parse(file_name):
-    with open(file_name, 'r', encoding='utf-8') as f:
+    with open(f"{file_name}.xml", 'r', encoding='utf-8') as f:
         data = f.read()
     print('reading ok')
     xml_data = BeautifulSoup(data, 'xml')
@@ -104,8 +163,8 @@ def xml_parse(file_name):
         product_name = "(".join(product_name.split('(')[:-1])
 
         list.append([product_name, id, maker_code, *inf])
-        len_inf.append([[len(inf), suggestion_num, product_name, id, maker_code, *inf]])
-    return len_inf
+        # len_inf.append([[len(inf), suggestion_num, product_name, id, maker_code, *inf]])
+    # return len_inf
     return list
 
 
