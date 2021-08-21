@@ -43,10 +43,10 @@ def what_is_it(inf, kaf=0.9):
     return None
 
 
-def make_xml_file(table_name, list):
+def make_xml_file(table_name, lists):
     print('make xml')
     table = ET.Element('Товар')
-    for i in range(len(list)):
+    for list in lists:
         product_name = list[0]
         id = list[1]
         maker_code = list[2]
