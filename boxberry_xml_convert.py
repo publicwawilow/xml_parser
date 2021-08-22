@@ -8,6 +8,7 @@ from icecream import ic
 
 
 def same_text_or_not(text_one, text_two, similarity_kaf=0.9):
+    # function return true if text one and text two same, false if not
     try:
         text_one = str(text_one)
         text_two = str(text_two)
@@ -127,11 +128,11 @@ def one_item_xml_parse(file_name, suggestion_num):
     print('convert ok')
     suggestions = xml_data.find_all('Предложение')
     id = str(suggestions[suggestion_num].find('Ид')).split('Ид')[1][1:][:-2]
-        # here i have big <Наименование>
-        # with structure Name (maker_id, brand, size)
+    # here i have big <Наименование>
+    # with structure Name (maker_id, brand, size)
     suggestions_name = str(suggestions[suggestion_num].find('Наименование')).split('Наименование')[1][1:][:-2]
-        # convert str {Носки Asics 3PPK Lyte Sock (3 пары) (123458 0900-I, Asics, 3 пары, 35-38, Турция, черно-серый)}
-        # to list
+    # convert str {Носки Asics 3PPK Lyte Sock (3 пары) (123458 0900-I, Asics, 3 пары, 35-38, Турция, черно-серый)}
+    # to list
     inf_list = suggestions_name.split(', ')
     inf = inf_list[1:]
     product_name = inf_list[0]
@@ -148,7 +149,7 @@ def xml_parse(file_name):
     print('convert ok')
     suggestions = xml_data.find_all('Предложение')
     list = []
-    len_inf = []
+    # len_inf = []
     for suggestion_num in range(len(suggestions)):
         id = str(suggestions[suggestion_num].find('Ид')).split('Ид')[1][1:][:-2]
         # here i have big <Наименование>
